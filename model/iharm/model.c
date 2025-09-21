@@ -911,6 +911,9 @@ void init_iharm_grid(char *fnam, int dumpidx)
   } else if ( strncmp(metric_name, "EKS", 19) == 0 ) {
     metric = METRIC_EKS;
     cstopx[2] = M_PI;
+  } else if ( strncmp(metric_name, "WKS", 19) == 0)  {
+    metric = METRIC_WKS;
+    cstopx[2] = 1.0;
   } else {
     fprintf(stderr, "File is in unknown metric %s.  Cannot continue.\n", metric_name);
     exit(-1);
@@ -1005,6 +1008,10 @@ void init_iharm_grid(char *fnam, int dumpidx)
       hdf5_set_directory("/header/geom/eks/");
       fprintf(stderr, "Using Kerr-Schild coordinates with exponential radial coordiante\n");
       break;
+    case METRIC_WKS:
+      hdf5_set_directory("/header/geom/wks/");
+      fprintf(stderr, "Using Wide-pole Kerr-Schild coordinates WMKS\n");
+      break;
   }
   
   if ( metric == METRIC_MKS3 ) {
@@ -1019,8 +1026,14 @@ void init_iharm_grid(char *fnam, int dumpidx)
     hdf5_read_single_val(&a, "a", H5T_IEEE_F64LE);
     hdf5_read_single_val(&Rin, "r_in", H5T_IEEE_F64LE);
     hdf5_read_single_val(&Rout, "r_out", H5T_IEEE_F64LE);
-    fprintf(stderr, "eKS parameters a: %f Rin: %f Rout: %f\n", a, Rin, Rout);
-    
+    fprintf(stderr, "eKS parameters a: %f Rin: %f Rout: %f\n", a, Rin, Rout); 
+  } else if ( metric == METRIC_WKS ) {
+    hdf5_read_single_val(&a, "a", H5T_IEEE_F64LE);
+    hdf5_read_single_val(&Rin, "r_in", H5T_IEEE_F64LE);
+    hdf5_read_single_val(&Rout, "r_out", H5T_IEEE_F64LE);
+    hdf5_read_single_val(&lin_frac, "lin_frac", H5T_IEEE_F64LE);
+    hdf5_read_single_val(&smoothness, "smoothness", H5T_IEEE_F64LE);
+    fprintf(stderr, "WKS parameters a: %f Rin: %f Rout: %f lin_frac: %f smoothness: %f\n",a, Rin, Rout, lin_frac, smoothness);
   } else { // Some brand of MKS.  All have the same parameters
     hdf5_read_single_val(&a, "a", H5T_IEEE_F64LE);
     hdf5_read_single_val(&hslope, "hslope", H5T_IEEE_F64LE);
@@ -1038,7 +1051,7 @@ void init_iharm_grid(char *fnam, int dumpidx)
       hdf5_read_single_val(&poly_alpha, "poly_alpha", H5T_IEEE_F64LE);
       hdf5_read_single_val(&mks_smooth, "mks_smooth", H5T_IEEE_F64LE);
       poly_norm = 0.5*M_PI*1./(1. + 1./(poly_alpha + 1.)*1./pow(poly_xt, poly_alpha));
-      fprintf(stderr, "MKS parameters poly_xt: %f poly_alpha: %f mks_smooth: %f poly_norm: %f\n", poly_xt, poly_alpha, mks_smooth, poly_norm);
+      fprintf(stderr, "FMKS parameters poly_xt: %f poly_alpha: %f mks_smooth: %f poly_norm: %f\n", poly_xt, poly_alpha, mks_smooth, poly_norm);
     }
   }
 

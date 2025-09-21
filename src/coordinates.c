@@ -10,6 +10,7 @@ int metric = -1;
 double a, hslope; // mks
 double poly_norm, poly_xt, poly_alpha, mks_smooth; // fmks
 double mks3R0, mks3H0, mks3MY1, mks3MY2, mks3MP0; // mks3
+double lin_frac, smoothness; // wks
 
 // Coordinate parameters
 double startx[NDIM], stopx[NDIM], dx[NDIM];
@@ -91,7 +92,12 @@ void bl_coord(double X[NDIM], double *r, double *th)
                                     + (pow(2., mks3MP0) * (-mks3MY1 + mks3MY2))
                                         / pow(exp(X[1]) + mks3R0, mks3MP0))
                                     * (1. - 2. * X[2]) + X[2])))) / 2.;
-        break;
+          break;
+        case METRIC_WKS:
+            *th = 0.5 * M_PI * (1 + lin_frac * (2 * X[2] - 1) 
+                  + (1 - lin_frac) * (tanh((X[2] - 1) / smoothness) + 1) 
+                  - (1 - lin_frac) * (tanh(-1 * X[2] / smoothness) + 1));   
+          break;  
     }
   }
 }
@@ -342,6 +348,11 @@ void set_dxdX(double X[NDIM], double dxdX[NDIM][NDIM])
         break;
       case METRIC_EMINKOWSKI:
         // keep radial transformation element!
+        break;
+      case METRIC_WKS:
+        dxdX[2][2] = 0.5 * M_PI + (2 * lin_frac + 
+                     (1 - lin_frac) / (smoothness * pow(cosh((X[2] - 1) / smoothness), 2)) +
+                     (1 - lin_frac) / (smoothness * pow(cosh(-X[2] / smoothness), 2)));
         break;
     }
   }

@@ -851,6 +851,9 @@ int read_parameters_and_allocate_memory(char *fnam, int dumpidx)
   } else if (strncmp(coordinate_system, "eks", 19) == 0) {
     metric = METRIC_EKS;
     cstopx[2] = M_PI;
+  } else if (strncmp(coordinate_system, "wks", 19) == 0) {
+    metric = METRIC_WKS;
+    cstopx[2] = 1.0;
   } else {
     fprintf(stderr, "Unknown coordinate system: %s\n", coordinate_system);
     return -1;
@@ -933,6 +936,9 @@ int read_parameters_and_allocate_memory(char *fnam, int dumpidx)
     case METRIC_EKS:
       fprintf(stderr, "Using Kerr-Schild coordinates with exponential radial coordiante\n");
       break;
+    case METRIC_WKS:
+      fprintf(stderr, "Using Wide-pole Kerr-Schild coordinates WKS\n");
+      break;
   }
 
   /* Load metric-specific parameters */
@@ -972,6 +978,18 @@ int read_parameters_and_allocate_memory(char *fnam, int dumpidx)
     poly_norm = 0.5 * M_PI * 1. / (1. + 1. / (poly_alpha + 1.) * 1. / pow(poly_xt, poly_alpha));
     fprintf(stderr, "FMKS parameters a: %f hslope: %f Rin: %f Rout: %f mks_smooth: %f poly_xt: %f poly_alpha: %f poly_norm: %f\n", 
       a, hslope, Rin, Rout, mks_smooth, poly_xt, poly_alpha, poly_norm);
+  } else if (metric == METRIC_WKS) {
+    get_parameter_value(parfile, "coordinates", "a", TYPE_DBL, &a, 0);
+    dict_add(model_params, "a", (snprintf(buffer, sizeof(buffer), "%.8g", a), buffer));
+    get_parameter_value(parfile, "coordinates", "r_in", TYPE_DBL, &Rin, 0);
+    dict_add(model_params, "r_in", (snprintf(buffer, sizeof(buffer), "%.8g", Rin), buffer));
+    get_parameter_value(parfile, "coordinates", "r_out", TYPE_DBL, &Rout, 0);
+    dict_add(model_params, "r_out", (snprintf(buffer, sizeof(buffer), "%.8g", Rout), buffer));
+    get_parameter_value(parfile, "coordinates", "lin_frac", TYPE_DBL, &lin_frac, 0);  
+    dict_add(model_params, "lin_frac", (snprintf(buffer, sizeof(buffer), "%.8g", lin_frac), buffer));  
+    get_parameter_value(parfile, "coordinates", "smoothness", TYPE_DBL, &smoothness, 0);  
+    dict_add(model_params, "smoothness", (snprintf(buffer, sizeof(buffer), "%.8g", smoothness), buffer)); 
+    fprintf(stderr, "WKS parameters a: %f r_in: %f r_out: %f lin_frac: %f smoothness %f\n", a, Rin, Rout, lin_frac, smoothness);
   }
 
   /* Don't emit beyond specified limit or coordinate limit */

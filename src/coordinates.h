@@ -20,6 +20,8 @@
 // eKS exponential radial coordinate; KS otherwise. note not the same 
 // as eKS_internal, which has X2 in [0, 1]
 #define METRIC_EKS 6
+// Widepole coordinates, see Cho et al (2024) Appendix C
+#define METRIC_WKS 7
 
 // Coordinate parameters.  See 
 extern int use_eKS_internal;
@@ -27,6 +29,7 @@ extern int metric;
 extern double a, hslope; // mks
 extern double poly_norm, poly_xt, poly_alpha, mks_smooth; // fmks
 extern double mks3R0, mks3H0, mks3MY1, mks3MY2, mks3MP0; // mks3
+extern double lin_frac, smoothness; // wks
 extern double startx[NDIM], stopx[NDIM], dx[NDIM];
 extern double cstartx[NDIM], cstopx[NDIM];
 extern double R0, Rin, Rout, Rh;
