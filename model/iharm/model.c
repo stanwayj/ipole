@@ -1010,7 +1010,7 @@ void init_iharm_grid(char *fnam, int dumpidx)
       break;
     case METRIC_WKS:
       hdf5_set_directory("/header/geom/wks/");
-      fprintf(stderr, "Using Wide-pole Kerr-Schild coordinates WMKS\n");
+      fprintf(stderr, "Using Wide-pole Kerr-Schild coordinates WKS\n");
       break;
   }
   
