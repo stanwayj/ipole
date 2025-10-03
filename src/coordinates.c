@@ -93,11 +93,11 @@ void bl_coord(double X[NDIM], double *r, double *th)
                                         / pow(exp(X[1]) + mks3R0, mks3MP0))
                                     * (1. - 2. * X[2]) + X[2])))) / 2.;
           break;
-        case METRIC_WKS:
-            *th = 0.5 * M_PI * (1 + lin_frac * (2 * X[2] - 1) 
-                  + (1 - lin_frac) * (tanh((X[2] - 1) / smoothness) + 1) 
-                  - (1 - lin_frac) * (tanh(-1 * X[2] / smoothness) + 1));   
-          break;  
+      case METRIC_WKS:
+        *th = M_PI / 2. * (1. + 2. * lin_frac * (X[2] - 0.5) 
+              + (1. - lin_frac) * (tanh((X[2] - 1.) / smoothness) + 1.) 
+              - (1. - lin_frac) * (tanh(-X[2] / smoothness) + 1.));   
+        break;  
     }
   }
 }
@@ -350,9 +350,9 @@ void set_dxdX(double X[NDIM], double dxdX[NDIM][NDIM])
         // keep radial transformation element!
         break;
       case METRIC_WKS:
-        dxdX[2][2] = 0.5 * M_PI + (2 * lin_frac + 
-                     (1 - lin_frac) / (smoothness * pow(cosh((X[2] - 1) / smoothness), 2)) +
-                     (1 - lin_frac) / (smoothness * pow(cosh(-X[2] / smoothness), 2)));
+        dxdX[2][2] = M_PI / 2. * (2. * lin_frac + 
+                     (1. - lin_frac) / (smoothness * pow(cosh((X[2] - 1.) / smoothness), 2.)) + 
+                     (1. - lin_frac) / (smoothness * pow(cosh(X[2] / smoothness),2.)));
         break;
     }
   }
